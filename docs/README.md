@@ -1,13 +1,16 @@
 # Documentación del programa SmartPark
-## TODO
- - Agregar el total recaudado a GRAPH_In-Out
- - Faltan 2 graficos
 
-## Diagrama del Registro Inicial
-<!-- <img src="./GRAPH_Inicial.svg"> -->
+## Diagrama de Registro Inicial
+<img src="./GRAPH_RegistroInicial.svg">
 
-## Diagrama del Menu Principal
-<!-- <img src="./GRAPH_Menu.svg"> -->
+## Diagrama de Menu Principal
+<img src="./GRAPH_MenuPrincipal.svg">
 
-## Diagrama del Registro In-Out
-<!-- <img src="./GRAPH_In-Out.svg"> -->
+## Diagrama de Registro In-Out
+<img src="./GRAPH_RegistroInOut.svg">
+
+## Diagrama de Mostrar Estado
+<img src="./GRAPH_MostrarEstado.svg">
+
+## Diagrama de Simular Tiempo
+<img src="./GRAPH_SimularTiempo.svg">
