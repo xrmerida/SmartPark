@@ -25,7 +25,7 @@
             ////////// DECLARACION COLORES //////////
             const ConsoleColor error = ConsoleColor.Red;
             const ConsoleColor menu = ConsoleColor.Cyan;
-            const ConsoleColor menuFg = ConsoleColor.DarkGray;
+            const ConsoleColor menuFg = ConsoleColor.Black;
             const ConsoleColor confirmar = ConsoleColor.Yellow;
 
             //////////////////////////////////////
@@ -72,21 +72,21 @@
                         capacidad = int.Parse(temp);
                     } catch {
                         Console.ForegroundColor = error;
-                        Console.WriteLine("Ingrese un numero!");
+                        Console.WriteLine(" :: Ingrese un numero!");
                         Console.ResetColor();
                         continue;
                     }
                     if (capacidad < 10)
                     {   // Confirmar que la capacidad sea mayor a 10 y continuar 
                         Console.ForegroundColor = error;
-                        Console.WriteLine("Capacidad debe ser mayor o igual a 10!");
+                        Console.WriteLine(" :: Capacidad debe ser mayor o igual a 10!");
                         Console.ResetColor();
                     }
                 } while (capacidad < 10);
 
                 // Codificación de salida con colores
                 Console.ForegroundColor = confirmar;
-                Console.Write("\n:: Operador ");
+                Console.Write(" :: Operador ");
                 Console.ResetColor();
                 Console.Write(operador);
                 Console.ForegroundColor = confirmar;
@@ -98,13 +98,13 @@
                 Console.ResetColor();
                 Console.Write(codigoTurno);
                 Console.ForegroundColor = confirmar;
-                Console.Write(" [S/n] ");
+                Console.Write("? [S/n] ");
                 Console.ResetColor();
                 temp = Console.ReadLine() ?? "\n";
             } while (temp is "n" or "N");
 
             ////////// MENU PRINCIPAL (BUCLE) //////////
-            while (!salida)
+            do
             {   // Mostrara el menu hasta que el usuario salga
                 Console.Clear();
                 Console.WriteLine("""
@@ -144,19 +144,19 @@
                 if (seleccion == "2") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
-                    Console.WriteLine("  [2] Mostrar estado ");
+                    Console.WriteLine("  [2] Simular paso del tiempo ");
                     Console.ResetColor();
                 } else {
-                    Console.WriteLine("  [2] Mostrar estado ");
+                    Console.WriteLine("  [2] Simular paso del tiempo ");
                 }
 
                 if (seleccion == "3") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
-                    Console.WriteLine("  [3] Simular paso del tiempo ");
+                    Console.WriteLine("  [3] Mostrar estado ");
                     Console.ResetColor();
                 } else {
-                    Console.WriteLine("  [3] Simular paso del tiempo ");
+                    Console.WriteLine("  [3] Mostrar estado ");
                 }
 
                 if (seleccion == "4") {
@@ -169,7 +169,6 @@
                 }
 
                 // Guardar la tecla presionada por el usuario
-                Console.Write(":: ");
                 temp = Console.ReadKey().Key.ToString();
                 // Tecla enter sera usada para seleccionar
                 if (temp != "Enter") {
@@ -191,25 +190,39 @@
                 switch (seleccion) {
                     case "1":
                         if (ticketActivo) {
-                            ////////// REGISTRO SALIDA //////////
+                            // TODO://////// REGISTRO SALIDA //////////
+                            ticketActivo = false;
                         } else {
-                            ////////// REGISTRO ENTRADA //////////
+                            // TODO://////// REGISTRO ENTRADA //////////
+                            ticketActivo = true;
                         }
                         break;
 
-                    case "2" or "4":
-                        ////////// MOSTRAR ESTADO //////////
+                    case "2":
+                        // TODO://////// SIMULAR TIEMPO //////////
+                        break;
+
+                    case "3" or "4":
+                        // TODO://////// MOSTRAR ESTADO //////////
                         if (seleccion == "4") {
                             ////////// SALIR DEL PROGRAMA //////////
-                            salida = true;
+                            if (ticketActivo)
+                            {   // Alerta si hay un ticket activo
+                                Console.ForegroundColor = error;
+                                Console.WriteLine(" :: Hay un ticket activo!");
+                                Console.ResetColor();
+                            }
+                            Console.ForegroundColor = confirmar;
+                            Console.Write(" :: Salir del programa? [S/n] ");
+                            temp = Console.ReadLine() ?? "\n";
+                            // En caso el usuario responda n o N, el programa
+                            // terminara
+                            if (temp is not ("n" or "N")) salida = true;
+                            Console.ResetColor();
                         }
                         break;
-
-                    case "3":
-                        ////////// SIMULAR TIEMPO //////////
-                        break;
                 }
-            }
+            } while (!salida);
         }
     }
 }
