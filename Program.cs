@@ -40,10 +40,18 @@
                 Console.Write("Ingrese su codigo de turno: ");
                 for (int i = 0; i < 4; i++)
                 {   // Bucle Permite Solo 4 Digitos
-                    char tempC = Console.ReadKey().KeyChar;
+                    temp = Console.ReadKey().Key.ToString();
                     // No se permiten espacios
-                    if (tempC is not (' ' or '\r')) codigoTurno += tempC;
-                    else i--;
+                    if (temp.Length == 2) {
+                        // En caso el usuario esciba un numero
+                        temp = temp.Substring(1);
+                    } else  if (temp.Length > 2){
+                        // Si es un tecla especial (ej. enter)
+                        i--;
+                        continue;
+                    }
+                        // Si es un caracter unico (ej. A)
+                    codigoTurno += temp;
                 }
                 Console.WriteLine();
 
@@ -51,6 +59,7 @@
                 do {
                     Console.Write("Ingrese la capacidad del parqueo: ");
                     temp = Console.ReadLine() ?? "0\n";
+                    // Si usuario no ingresa nada registrar 0
                     capacidad = temp.Length == 0 ? 0 : int.Parse(temp);
                     if (capacidad < 10) {
                         Console.ForegroundColor = error;
