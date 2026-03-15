@@ -20,7 +20,8 @@
             bool esVIP;
             bool salida = false;
             string temp;
-            string seleccion = "1";
+            string seleccion = "D1";
+            bool seleccionExiste = false;
 
             ////////// DECLARACION COLORES //////////
             const ConsoleColor error = ConsoleColor.Red;
@@ -63,7 +64,7 @@
                 // Solicitar capacidad del parqueo
                 do {
                     Console.Write("Ingrese la capacidad del parqueo: ");
-                    temp = Console.ReadLine() ?? "0";
+                    temp = Console.ReadLine() ?? "";
                     // Intentar hacer la conversion y devolver
                     // error en caso que no sea posible
                     try {
@@ -120,19 +121,25 @@
                 """);
 
                 // Mostrar el menu principal como una TUI
-                // Utilizando al variable seleccion que sera asignada
-                // más adelante, se mostrara la opcion seleccionada como
-                // en una TUI
+                // Utilizando al variable seleccion que tiene asignado el valor D1
+                // este valor se explica despues cuando se toma la lecutra del 
+                // usuario
                 //
                 // Seleccion sera el indice que dira que opcion esta seleccionada
                 // utilizando clausulas if se cambiara el color dependiendo de 
                 // si esta o no seleccionada
+                // 
+                // La siguiente linea es una manera de evitar que la selección no
+                // este fuera de rango, si esta fuera regresa a "D1"
+                seleccionExiste = false;
+                Console.WriteLine(seleccion);
                 if (seleccion == "D1") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
                     if (ticketActivo) Console.WriteLine(" > [1] Registrar salida ");
                     else Console.WriteLine(" > [1] Registrar entrada ");
                     Console.ResetColor();
+                    seleccionExiste = true;
                 } else  if (ticketActivo) {
                     Console.WriteLine("   [1] Registrar salida ");
                 } else {
@@ -144,6 +151,7 @@
                     Console.ForegroundColor = menuFg;
                     Console.WriteLine(" > [2] Simular paso del tiempo ");
                     Console.ResetColor();
+                    seleccionExiste = true;
                 } else {
                     Console.WriteLine("   [2] Simular paso del tiempo ");
                 }
@@ -153,6 +161,7 @@
                     Console.ForegroundColor = menuFg;
                     Console.WriteLine(" > [3] Mostrar estado ");
                     Console.ResetColor();
+                    seleccionExiste = true;
                 } else {
                     Console.WriteLine("   [3] Mostrar estado ");
                 }
@@ -162,9 +171,12 @@
                     Console.ForegroundColor = menuFg;
                     Console.WriteLine(" > [4] Salir del programa ");
                     Console.ResetColor();
+                    seleccionExiste = true;
                 } else {
                     Console.WriteLine("   [4] Salir del programa ");
                 }
+                // Esta linea evitara que se seleccione una opcion que no existe
+                if (!seleccionExiste) { seleccion = "D1"; continue; }
 
                 // Guardar la tecla presionada por el usuario
                 temp = Console.ReadKey().Key.ToString();
@@ -217,30 +229,36 @@
 
                     case "D3" or "D4":
                         // TODO://////// MOSTRAR ESTADO //////////
-                        if (seleccion == "D4") {
                         Console.Clear();
                         Console.WriteLine("""
                          █▀▄ ██▀ ▄▀▀ █ █ █▄ ▄█ ██▀ █▄ █
                          █▀▄ █▄▄ ▄██ ▀▄█ █ ▀ █ █▄▄ █ ▀█
 
                         """);
-                        }
-                        if (seleccion == "D4") {
-                            ////////// SALIR DEL PROGRAMA //////////
-                            if (ticketActivo)
-                            {   // Alerta si hay un ticket activo
-                                Console.ForegroundColor = error;
-                                Console.WriteLine(" :: Hay un ticket activo!");
-                                Console.ResetColor();
-                            }
+                        if (ticketActivo)
+                        {   // Alerta si hay un ticket activo
                             Console.ForegroundColor = confirmar;
-                            Console.Write(" :: Salir del programa? [S/n] ");
-                            temp = Console.ReadLine() ?? "\n";
-                            // En caso el usuario responda n o N, el programa
-                            // no terminara
-                            salida = temp is not ("n" or "N");
+                            Console.WriteLine("Hay un ticket activo!");
                             Console.ResetColor();
                         }
+
+                        if (seleccion == "D4")
+                        {   ////////// SALIR DEL PROGRAMA //////////
+                            Console.ForegroundColor = confirmar;
+                            Console.Write(" :: Salir del programa? [S/n] ");
+                            temp = Console.ReadLine() ?? "";
+                            // Si el usuario seleccion 'n' o 'N'
+                            // la variable salida sera asignada
+                            // verdadera y el ciclo terminara
+                            salida = temp is not ("n" or "N");
+                        } else {
+                            // Mostrar confirmación para regresar a menu principal
+                            Console.ForegroundColor = confirmar;
+                            Console.Write(" :: Presione enter para regresar ");
+                            Console.ReadLine();
+                        }
+                        Console.ResetColor();
+
                         break;
                 }
             } while (!salida);
