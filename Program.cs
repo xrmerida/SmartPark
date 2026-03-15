@@ -42,20 +42,27 @@
                 Console.Write("Ingrese su codigo de turno: ");
                 for (int i = 0; i < 4; i++)
                 {   // Bucle Permite Solo 4 Digitos
-                    temp = Console.ReadKey().Key.ToString();
-                    // El indice de las teclas de los numeros
-                    // inicia con una D (ej. tecla '1' tiene
-                    // indice 'D1')
-                    // TrimStart elimina este digito del inicio 
-                    // De esta manera, solo se permite si la tecla
-                    // registrada es igual a uno (letra o numero)
-                    temp = temp.TrimStart('D');
-                    if (temp.Length != 1) {
-                        // Si es un tecla especial (ej. enter)
-                        // no concatenarla
+                    // Colocar (true) a ReadKey desabilita el echo de caracteres
+                    // esto evita que se muestren espacios y enters
+                    temp = Console.ReadKey(true).Key.ToString();
+                    // Si la tecla registrada tiene más de 2 digitos
+                    // implica que es una tecla especial (ej. enter)
+                    if (temp.Length > 2) {
                         i--;
                         continue;
+                    } else if (temp.Length == 2) {
+                        // El indice de las teclas de los numeros inicia con una D
+                        // (ej. tecla '1' tiene indice 'D1') y ya que solo los numeros
+                        // tiene este indice, son las unicas teclas que tiene 2 caracters
+                        //
+                        // la siguiente linea es una simplificación del metodo
+                        // de .Substring(1) el cual eliminara solamente el primer
+                        // caracter
+                        temp = temp[1..];
                     }
+                    // Ya que ReadKey tiene el echo desactivado,
+                    // se imprimen los caracteres permitidos solamente
+                    Console.Write(temp);
                     // Concatenar el caracter registrado
                     codigoTurno += temp;
                 }
@@ -132,65 +139,66 @@
                 // La siguiente linea es una manera de evitar que la selección no
                 // este fuera de rango, si esta fuera regresa a "D1"
                 seleccionExiste = false;
-                Console.WriteLine(seleccion);
                 if (seleccion == "D1") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
-                    if (ticketActivo) Console.WriteLine(" > [1] Registrar salida ");
-                    else Console.WriteLine(" > [1] Registrar entrada ");
+                    if (ticketActivo) Console.WriteLine("  > [1] Registrar salida ");
+                    else Console.WriteLine("  > [1] Registrar entrada ");
                     Console.ResetColor();
                     seleccionExiste = true;
                 } else  if (ticketActivo) {
-                    Console.WriteLine("   [1] Registrar salida ");
+                    Console.WriteLine("    [1] Registrar salida ");
                 } else {
-                    Console.WriteLine("   [1] Registrar entrada ");
+                    Console.WriteLine("    [1] Registrar entrada ");
                 }
 
                 if (seleccion == "D2") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
-                    Console.WriteLine(" > [2] Simular paso del tiempo ");
+                    Console.WriteLine("  > [2] Simular paso del tiempo ");
                     Console.ResetColor();
                     seleccionExiste = true;
                 } else {
-                    Console.WriteLine("   [2] Simular paso del tiempo ");
+                    Console.WriteLine("    [2] Simular paso del tiempo ");
                 }
 
                 if (seleccion == "D3") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
-                    Console.WriteLine(" > [3] Mostrar estado ");
+                    Console.WriteLine("  > [3] Mostrar estado ");
                     Console.ResetColor();
                     seleccionExiste = true;
                 } else {
-                    Console.WriteLine("   [3] Mostrar estado ");
+                    Console.WriteLine("    [3] Mostrar estado ");
                 }
 
                 if (seleccion == "D4") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
-                    Console.WriteLine(" > [4] Salir del programa ");
+                    Console.WriteLine("  > [4] Salir del programa ");
                     Console.ResetColor();
                     seleccionExiste = true;
                 } else {
-                    Console.WriteLine("   [4] Salir del programa ");
+                    Console.WriteLine("    [4] Salir del programa ");
                 }
+                Console.ForegroundColor = menu;
+                Console.Write(" :: Presione enter para seleccionar ");
+                Console.ResetColor();
                 // Esta linea evitara que se seleccione una opcion que no existe
                 if (!seleccionExiste) { seleccion = "D1"; continue; }
 
                 // Guardar la tecla presionada por el usuario
-                temp = Console.ReadKey().Key.ToString();
+                temp = Console.ReadKey(true).Key.ToString();
                 if (temp.Length == 2) {
                     // Solo leera numeros (indices 'Dn' donde
                     // n es un numero)
                     seleccion = temp;
                     continue;
                 } else if (temp != "Enter") {
-                    // Si usuario selecciona la tecla enter
-                    // no ejecutuara la sigueinte linea
+                    // El usuario debe presionar la tecla enter para seleccionar
+                    // una opcion, de lo contrario se reiniciara el bucle
                     continue;
                 }
-
 
                 ////////// SWITCH DE SUBPROCESOS //////////
                 switch (seleccion) {
