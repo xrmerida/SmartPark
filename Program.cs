@@ -20,7 +20,7 @@
             bool esVIP;
             bool salida = false;
             string temp;
-            string seleccion = "D1";
+            string seleccion = "1";
             bool seleccionExiste = false;
 
             ////////// DECLARACION COLORES //////////
@@ -29,9 +29,9 @@
             const ConsoleColor menuFg = ConsoleColor.Black;
             const ConsoleColor confirmar = ConsoleColor.Yellow;
 
-            //////////////////////////////////////
             ////////// REGISTRO INICIAL //////////
-            do {
+            do
+            {
                 Console.Clear();
                 // Solicitar nombre del operador
                 Console.Write("Ingrese su nombre: ");
@@ -39,56 +39,96 @@
 
                 // Solicitar Codigo de Turno
                 codigoTurno = "";
-                Console.Write("Ingrese su codigo de turno: ");
-                for (int i = 0; i < 4; i++)
-                {   // Bucle Permite Solo 4 Digitos
-                    // Colocar (true) a ReadKey desabilita el echo de caracteres
-                    // esto evita que se muestren espacios y enters
-                    temp = Console.ReadKey(true).Key.ToString();
-                    // Si la tecla registrada tiene más de 2 digitos
-                    // implica que es una tecla especial (ej. enter)
-                    if (temp.Length > 2) {
-                        i--;
-                        continue;
-                    } else if (temp.Length == 2) {
-                        // El indice de las teclas de los numeros inicia con una D
-                        // (ej. tecla '1' tiene indice 'D1') y ya que solo los numeros
-                        // tiene este indice, son las unicas teclas que tiene 2 caracters
-                        //
-                        // la siguiente linea es una simplificación del metodo
-                        // de .Substring(1) el cual eliminara solamente el primer
-                        // caracter
-                        temp = temp[1..];
-                    }
-                    // Ya que ReadKey tiene el echo desactivado,
-                    // se imprimen los caracteres permitidos solamente
-                    Console.Write(temp);
-                    // Concatenar el caracter registrado
-                    codigoTurno += temp;
-                }
-                Console.WriteLine();
+                temp = "";
+                Console.ForegroundColor = menu;
+                Console.Write("\n :: Presione enter para confirmar");
+                Console.ResetColor();
+                Console.Write("\eM");
+                while (true)
+                {
+                    // Se necesita un enter para confirmar la seleccion
+                    if (codigoTurno.Length > 3) {
+                        if (temp == "Enter") break;
+                        if (temp == "Backspace") codigoTurno = codigoTurno[..^1];
 
-                // Solicitar capacidad del parqueo
+                    } else {
+                        switch (temp.Length)
+                        {   // Los caracteres numericos tienen un indice de dos caracteres,
+                            // Los caracteres de letras tienen un indice de un caracter
+                            // Todas los caracteres especiales tienen un indice mayor a 2
+                            case 1:
+                                // Concatenar el caracter de letra a codigoTurno
+                                codigoTurno += temp;
+                                break;
+                            case 2:
+                                // Se elimina el indice del numero
+                                temp = temp[1..];
+                                // Se concatena el numero a codigoTurno
+                                codigoTurno += temp;
+                                break;
+                        }
+
+                        switch (temp)
+                        {
+                            case "Backspace":
+                                if (codigoTurno.Length > 0)
+                                {   // Cuando se precione Backspace se elimina un caracter
+                                    // de codigoTurno, el cual sera impreso despues
+                                    codigoTurno = codigoTurno[..^1];
+                                }
+                                else
+                                {   // Si el codigo de turno solo tiene un caracter, se
+                                    // elimina todo el contendio de la variable
+                                    codigoTurno = "";
+                                }
+                                break;
+
+                            case "Enter":
+                                if (codigoTurno.Length < 4)
+                                {   // Cuando se presione Enter, se muestra un error si la 
+                                    // cantidad de caracters es menor a 4
+                                    Console.ForegroundColor = error;
+                                    Console.Write("\n\r\e[2K :: Codigo de turno deben ser 4 digitos!");
+                                    Console.ResetColor();
+                                    // Regresa el cursor a el ultimo caracter de la linea anterior
+                                    Console.Write("\eM");
+                                    // Desasignar temp para evitar loop
+                                    temp = "";
+                                    continue;
+                                }
+                                break;
+                        }
+                    }
+                    // Se elimina el contendio de la linea con \r\e[J y se imprime de nuevo
+                    Console.Write($"\r\e[2KIngrese su codigo de turno: {codigoTurno}");
+                    // Se lee el indice del caracter presionado
+                    temp = Console.ReadKey(true).Key.ToString() ?? "";
+                }
+                // Devuelve el cursor a la siguiente linea
+                Console.Write("\e[J\n");
+
                 do {
-                    Console.Write("Ingrese la capacidad del parqueo: ");
+                    Console.Write("\r\e[2KIngrese la capacidad del parqueo: ");
                     temp = Console.ReadLine() ?? "";
                     // Intentar hacer la conversion y devolver
                     // error en caso que no sea posible
-                    try {
-                        capacidad = int.Parse(temp);
-                    } catch {
+                    if (!int.TryParse(temp, out capacidad))
+                    {
                         Console.ForegroundColor = error;
-                        Console.WriteLine(" :: Ingrese un numero!");
+                        Console.Write("\r\e[2K :: Ingrese un numero!");
                         Console.ResetColor();
+                        Console.Write("\eM");
                         continue;
                     }
                     if (capacidad < 10)
                     {   // Confirmar que la capacidad sea mayor a 10 y continuar 
                         Console.ForegroundColor = error;
-                        Console.WriteLine(" :: Capacidad debe ser mayor o igual a 10!");
+                        Console.Write("\r\e[2K :: Capacidad no puede ser meor a 10!");
                         Console.ResetColor();
+                        Console.Write("\eM");
                     }
                 } while (capacidad < 10);
+                Console.Write("\e[J");
 
                 // Codificación de salida con colores
                 Console.ForegroundColor = confirmar;
@@ -139,7 +179,7 @@
                 // La siguiente linea es una manera de evitar que la selección no
                 // este fuera de rango, si esta fuera regresa a "D1"
                 seleccionExiste = false;
-                if (seleccion == "D1") {
+                if (seleccion == "1") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
                     if (ticketActivo) Console.WriteLine("  > [1] Registrar salida ");
@@ -152,7 +192,7 @@
                     Console.WriteLine("    [1] Registrar entrada ");
                 }
 
-                if (seleccion == "D2") {
+                if (seleccion == "2") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
                     Console.WriteLine("  > [2] Simular paso del tiempo ");
@@ -162,17 +202,17 @@
                     Console.WriteLine("    [2] Simular paso del tiempo ");
                 }
 
-                if (seleccion == "D3") {
+                if (seleccion == "3") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
-                    Console.WriteLine("  > [3] Mostrar estado ");
+                    Console.WriteLine("  > [3] Mostrar resumen");
                     Console.ResetColor();
                     seleccionExiste = true;
                 } else {
-                    Console.WriteLine("    [3] Mostrar estado ");
+                    Console.WriteLine("    [3] Mostrar resumen");
                 }
 
-                if (seleccion == "D4") {
+                if (seleccion == "4") {
                     Console.BackgroundColor = menu;
                     Console.ForegroundColor = menuFg;
                     Console.WriteLine("  > [4] Salir del programa ");
@@ -192,6 +232,7 @@
                 if (temp.Length == 2) {
                     // Solo leera numeros (indices 'Dn' donde
                     // n es un numero)
+                    temp = temp[^1..];
                     seleccion = temp;
                     continue;
                 } else if (temp != "Enter") {
@@ -202,7 +243,7 @@
 
                 ////////// SWITCH DE SUBPROCESOS //////////
                 switch (seleccion) {
-                    case "D1":
+                    case "1":
                         if (ticketActivo) {
                             // TODO://////// REGISTRO SALIDA //////////
                             Console.Clear();
@@ -224,7 +265,7 @@
                         }
                         break;
 
-                    case "D2":
+                    case "2":
                         // TODO://////// SIMULAR TIEMPO //////////
                         Console.Clear();
                         Console.WriteLine("""
@@ -235,7 +276,7 @@
                         Console.ReadLine();
                         break;
 
-                    case "D3" or "D4":
+                    case "3" or "4":
                         // TODO://////// MOSTRAR ESTADO //////////
                         Console.Clear();
                         Console.WriteLine("""
@@ -250,7 +291,7 @@
                             Console.ResetColor();
                         }
 
-                        if (seleccion == "D4")
+                        if (seleccion == "4")
                         {   ////////// SALIR DEL PROGRAMA //////////
                             Console.ForegroundColor = confirmar;
                             Console.Write(" :: Salir del programa? [S/n] ");
