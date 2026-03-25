@@ -5,7 +5,7 @@
             // NOTE://////// DECLARACION DE VARIABLES //////////
             string operador;
             string codigoTurno;
-            int capacidad = 0;
+            int capacidad;
             bool ticketActivo = false;
             int ticketsCreados = 0;
             int ticketsCerrados = 0;
@@ -23,7 +23,7 @@
             bool salida = false;
             string temp;
             string seleccion = "1";
-            bool seleccionExiste = false;
+            bool seleccionExiste;
 
             ////////// DECLARACION COLORES //////////
             const ConsoleColor error = ConsoleColor.Red;
@@ -269,7 +269,7 @@
                             if (temp is "n" or "N") break;
 
                             // Se obtiene el tiempo que el cliente estuvo estacionado hasta el momento
-                            minutosEstacionados = minutoEntrada - (DateTime.Now.Hour * 60);
+                            minutosEstacionados = minutoEntrada - DateTime.Now.Minute - (DateTime.Now.Hour * 60);
                             montoFinal = 0;
                             if (minutosEstacionados > 360)
                             {
@@ -278,18 +278,22 @@
                             }
                             else
                             {   // Se calcula el montofinal dependiendo del tipo de vehiculo
+                                #pragma warning disable IDE0004
+                                // El sigueinte codigo muestra la advertencia IDE0004, por cast
+                                // inesecario, sin embargo, IDE0004 no aplica en este caso.
                                 switch (tipoVehiculo)
                                 {
                                     case 1: // Moto
-                                        montoFinal += 5 * (minutosEstacionados / 60);
+                                        montoFinal += (int)(5 * (minutosEstacionados / 60));
                                         break;
                                     case 2: // Auto
-                                        montoFinal += 10 * (minutosEstacionados / 60);
+                                        montoFinal += (int)( 10 * minutosEstacionados / 60);
                                         break;
                                     case 3: // Picup/SUV
-                                        montoFinal += 15 * (minutosEstacionados / 60);
+                                        montoFinal += (int)(15 * minutosEstacionados / 60);
                                         break;
                                 }
+                                #pragma warning restore IDE0004
                             }
 
                             if (minutosEstacionados % 60 > 15)
@@ -390,7 +394,6 @@
                                     // n es un numero)
                                     temp = temp[^1..];
                                     seleccion = temp;
-                                    continue;
                                 } else if (temp == "Enter") {
                                     // El usuario debe presionar la tecla enter para seleccionar
                                     // una opcion, de lo contrario se reiniciara el bucle
@@ -526,7 +529,8 @@
                           █  █ █▄▄ █ ▀ █ █▀  ▀▄▀
 
                         """);
-                        if (!ticketActivo) {
+                        if (!ticketActivo)
+                        {   // Si no hay tickets activos, no permitir simular tiempo
                             Console.ForegroundColor = confirmar;
                             Console.WriteLine(" :: No hay tickets activos");
                             Console.ForegroundColor = menu;
@@ -538,8 +542,7 @@
                         while (true)
                         {
                             Console.Write("\r\e[0KMinutos a agregar/quitar: ");
-                            temp = Console.ReadLine() ?? "0";
-                            if (!int.TryParse(temp, out tiempoSimulado))
+                            if (!int.TryParse(Console.ReadLine(), out tiempoSimulado))
                             {
                                 Console.ForegroundColor = error;
                                 Console.Write("\r\e[2K :: Ingrese un numero!");
@@ -560,6 +563,8 @@
                         if (temp is "n" or "N") break;
 
                         minutoEntrada += tiempoSimulado;
+                        // Se calculan cuantos minutos hay a la hora actual
+                        // al restar los minutos de entrada - los minutos actuales
                         tiempoSimulado =  minutoEntrada - DateTime.Now.Minute -
                             (DateTime.Now.Hour * 60);
                         switch (tiempoSimulado)
@@ -609,7 +614,7 @@
                         Console.ResetColor();
                         Console.WriteLine(ticketsCreados - ticketsCreados);
                         if (ticketActivo)
-                        {
+                        {   // Solo mostrar tiempo simulado si hay ticket Activo
                             Console.ForegroundColor = menu;
                             Console.Write("Tiempo transcurrido: ");
                             Console.ResetColor();
